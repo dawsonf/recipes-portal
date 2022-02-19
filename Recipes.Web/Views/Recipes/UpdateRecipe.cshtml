@@ -1,0 +1,107 @@
+﻿@model Recipes.Web.Models.Root
+
+
+
+@{
+    ViewData["Title"] = "Edit";
+}
+<div class="row">
+        <div class="row g-5 align-items-center">
+                    <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeIn;">
+                        <div class="about-img position-relative overflow-hidden p-4 pe-0">
+                            <img class="img-fluid w-100" src="https://images.unsplash.com/photo-1627907228175-2bf846a303b4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s" style="visibility: visible; animation-delay: 0.5s; animation-name: fadeIn;">
+                        <h1 class="mb-4">You're editing an existing recipe...</h1>
+                        <p class="mb-4">Use the form below to amend the Recipe's properties.</p>
+                        <p class="mb-4">Enter the name of the recipe that you would like to edit (either as name title or URL friendly (ie. hot-dog, Hot dog, and Hot Dog would yield the same result)</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>You can edit the ingredients, for the recipe, by using the "Add Ingredient" button. This completely overrides the existing ingredients stored against this meal.</p>
+                    </div>
+                </div>
+    <div class="col-md-4">
+        <form asp-action="View">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+
+
+                <label asp-for="rec_name" class="control-label"></label>
+                <input asp-for="rec_name" id="rec_name" class="form-control"  />
+                <span asp-validation-for="rec_name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="rec_ingredients" class="control-label"></label>
+                <input asp-for="rec_ingredients" id="txtIngredient" class="form-control" required />
+                <br>
+                <input type="button" value="Add Ingredient" onclick="AddIngredient()" />
+                <span asp-validation-for="rec_ingredients" class="text-danger"></span>
+                <div class="results">
+                    <ul class="list" id="ingredientList" required>
+                    </ul>
+                </div>
+            </div>
+            <div class="form-group" style="padding-left:244px">
+                <input type="button" value="Edit Recipe" class="btn btn-primary" onclick="BuildAndPost()" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to Recipes</a>
+</div>
+
+
+<script>
+   function AddIngredient(){
+       var val = document.getElementById("txtIngredient").value
+       $('ul.list').append('<li>' + val + '</li>');
+   };
+
+   function BuildAndPost(){
+       debugger;
+       var rec_name = document.getElementById("rec_name").value
+       var stringBuilder ="";
+
+       var elems = document.querySelectorAll('li');
+           elems.forEach(v => stringBuilder = stringBuilder + ',' + v.innerHTML
+           );
+
+       stringBuilder = stringBuilder.substring(1);
+
+       var jsonfied = {
+           ingredient: stringBuilder.replace( /,$/, "" ).split(",").map(function(ingredient){
+           return {ingredient};
+           })};
+
+       var jsonString = JSON.stringify(jsonfied);
+           
+           Post(rec_name,jsonString)};
+
+   function Post(rec_name,rec_ingredients) {
+       debugger
+        formData = new FormData();
+        formData.append("data", JSON.stringify({ rec_name : rec_name,
+                        rec_ingredients : rec_ingredients }));
+
+       $.ajax({
+                url: "/Recipes/UpdateRecipe",
+                type: "POST",
+                data: formData,
+                contentType: "application/json; charset=utf-8",
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    alert("Success: " + "Meal updated");
+
+                    window.location='Index';
+                },
+                error: function (result) {
+                    alert("Error: " + result.status);
+               }
+            });
+    }
+</script>
+
+

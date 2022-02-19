@@ -1,0 +1,116 @@
+﻿@model Recipes.Web.Models.Root
+
+@{
+    ViewData["Title"] = "Create";
+}
+<div class="row">
+    <div class="row g-5 align-items-center">
+                    <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeIn;">
+                        <div class="about-img position-relative overflow-hidden p-4 pe-0">
+                            <img class="img-fluid w-100" src="https://blog.flipbuilder.com/wp-content/uploads/2018/12/cookbook-general.jpg">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s" style="visibility: visible; animation-delay: 0.5s; animation-name: fadeIn;">
+                        <h1 class="mb-4">You're adding a new recipe...</h1>
+                        <p class="mb-4">Use the form below to capture a new recipe item.</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>Start by giving the item a recipe name.</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>You can add multiple ingredients, for the recipe, by using the "Add Ingredient" button.</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>Upload a descriptive image to attract more viewers.</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>Finally - Add the recipe to the database!</p>
+                    </div>
+                </div>
+    <div class="col-md-4">
+        <form asp-action="View">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="rec_name" class="control-label"></label>
+                <input asp-for="rec_name" id="rec_name" class="form-control" required />
+                <span asp-validation-for="rec_name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="rec_ingredients" class="control-label"></label>
+                <input asp-for="rec_ingredients" id="txtIngredient" class="form-control" required />
+                <br>
+                <input type="button" value="Add Ingredient" onclick="AddIngredient()" />
+                <span asp-validation-for="rec_ingredients" class="text-danger"></span>
+                <div class="results">
+                    <ul class="list" id="ingredientList" required>
+                    </ul>
+                </div>
+            </div>
+             <div class="form-group">
+                <label class="control-label">Image</label>
+            </div>
+
+          <form asp-action="UploadImage"
+                  asp-controller="Recipes"
+                  method="post"
+                  enctype="multipart/form-data">
+                <input type="file" id="file1"
+                       name="file1"/>
+            </form>
+                        <div class="form-group" style="padding-left:244px">
+                <input type="button" value="Add Recipe" class="btn btn-primary" onclick="BuildAndPost()" />
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    <a asp-action="Index">Back to Recipes</a>
+</div>
+
+<script>
+    function AddIngredient(){
+        var val = document.getElementById("txtIngredient").value
+        $('ul.list').append('<li>' + val + '</li>');
+    };
+
+    function BuildAndPost(){
+        var rec_name = document.getElementById("rec_name").value
+        var stringBuilder ="";
+
+        var elems = document.querySelectorAll('li');
+            elems.forEach(v => stringBuilder = stringBuilder + ',' + v.innerHTML
+            );
+
+        stringBuilder = stringBuilder.substring(1);
+
+        var jsonfied = {
+            ingredient: stringBuilder.replace( /,$/, "" ).split(",").map(function(ingredient){
+            return {ingredient};
+            })};
+
+        var jsonString = JSON.stringify(jsonfied);
+
+        // Post(rec_name,jsonString)};
+        var photo = document.getElementById("file1").files[0];
+         Post(rec_name,jsonString,photo)
+         }
+
+        
+    function Post(rec_name,rec_ingredients,rec_photo) {
+        formData = new FormData();
+        formData.append("data", JSON.stringify({ rec_name : rec_name,
+                        rec_ingredients : rec_ingredients,                        
+                        usr_code : '1' }));
+        formData.append("photo", rec_photo);
+
+       $.ajax({
+                url: "/Recipes/AddRecipe",
+                type: "POST",
+                data: formData,
+                contentType: "application/json; charset=utf-8",
+                contentType: false,
+                processData: false,
+                success: function (response) {
+
+                    window.location='Index';
+                },
+                error: function (result) {
+                    alert("Error: " + result.status);
+               }
+            });
+    }
+</script>
+
+

@@ -1,0 +1,195 @@
+﻿@using Recipes.Web.Models
+@model List<Root>
+
+@{
+    ViewData["Title"] = "Recipe Page";
+}
+@using static Recipes.Web.Models.Recipe;
+
+@using (Html.BeginForm())
+{<div>
+     <div class="row g-8 align-items-center">
+                    
+                        <h4 class="mb-4">This page shows the captured information against the recipe item.</h4>
+                        <p class="mb-4">You can use the HTML input (textarea) below to render any parsable HTML.</p>
+                        <p><i class="fa fa-check text-primary me-4"></i>You also have the ability to tweet, edit, or remove this recipe by using the below buttons</p>
+                    <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeIn;">
+                        <div class="about-img position-relative overflow-hidden p-4 pe-0">
+                            @*<img class="img-fluid w-100" src="https://images.unsplash.com/photo-1466637574441-749b8f19452f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80">*@
+                        </div>
+                    </div>
+                </div>
+                </div>
+    <form>
+        @foreach (var item in @ViewBag.ReceivedRecipe)
+        {
+            <div id="areaButtons" style="position:absolute; right:850px;">
+                @Html.ActionLink("Edit",
+        "UpdateRecipe",// controller action
+        "Recipes",// controller
+        new { @item.Id , @item.rec_name, @item.rec_ingredients}, // action parameters
+        new{ @class = "btn btn-info" })
+                <input type="button" id="btnGet" class="btn btn-danger" value="Delete" onclick="deleteRecipe(@item.Id)" />
+                              <a class="twitter-share-button"
+           href="https://twitter.com/intent/tweet?via=RecipesPortal">
+                    Tweet
+                </a>
+            </div>
+            <div>
+  
+            </div>
+            <br> 
+            <br>
+            <br>
+            <h2>@item.rec_name</h2>
+            <br>
+            <img src="data:image/png;base64,@item.rec_image"
+                         
+                         alt="foodItem"
+                         width="360" height="360"/>
+            <br>
+            <br>
+            <div class="container">
+                <h6>Date: @item.rec_date_created.ToShortDateString()</h6>
+            </div>
+            <div class="container">
+                <h6>Author: @item.usr_first_name</h6>
+            </div>
+            <br>
+            <div class="justify-content-sm-start">
+                <label style="font-weight:bold">Ingredients</label>
+                @foreach (var ingredient in ((List<Ingredient>)ViewBag.Ingredients))
+                {
+                    <ul>
+                        <li>@ingredient.ingredient</li>
+                    </ul>
+                }
+            </div>
+        }
+        <br>
+    </form>
+    <div>
+        <textarea id="renderMe" rows="4" cols="65" placeholder="Enter HTML Here..."></textarea>
+    </div>
+    <br>
+    <input value="Render HTML" type="button" class="btn btn-success" onclick="renderHtml()" />
+    <br>
+    <br>
+
+    <div id="Render"></div>
+
+}
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* Float four columns side by side */
+    .column {
+        float: left;
+        width: 25%;
+        padding: 0 10px;
+    }
+
+    /* Remove extra left and right margins, due to padding */
+    .row {
+        margin: 0 -5px;
+    }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+    /* Style the counter cards */
+    .card {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        padding: 16px;
+        text-align: center;
+        background-color: #f1f1f1;
+    }
+
+    /*Styling for html input rendering*/
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+        body > div:first-of-type {
+            height: 40%;
+        }
+
+            body > div:first-of-type > textarea {
+                width: 50%;
+                height: 100%;
+                box-sizing: border-box;
+                float: left;
+                background: lightyellow;
+            }
+
+    #Render {
+        height: 59%;
+        position: relative;
+        border: 1px solid black;
+        overflow: auto;
+    }
+
+        #Render .body {
+            width: 100% !important;
+            min-height: 100%;
+            position: absolute !important;
+        }
+
+    .container > * {
+        display: inline-block;
+    }
+</style>
+
+<script>
+         function renderHtml(){
+             var htmlBody = document.getElementById("renderMe").value;
+              $('#Render').html(htmlBody);
+         }
+
+         function deleteRecipe(id) {
+            $.ajax({
+                url: "/Recipes/DeleteRecipe",
+                type: "POST",
+                data: { Id : id},
+                success: function (response) {
+                    //alert(response);
+                    window.location='';
+                },
+                error: function (result) {
+                    alert("Error: " + result.status);
+               }
+            });
+    }
+</script>
+<script>
+
+    //Twitter widget script to render tweet button
+    window.twttr = (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0],
+          t = window.twttr || {};
+        if (d.getElementById(id)) return t;
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "https://platform.twitter.com/widgets.js";
+        fjs.parentNode.insertBefore(js, fjs);
+
+        t._e = [];
+        t.ready = function (f) {
+            t._e.push(f);
+        };
+
+        return t;
+    }(document, "script", "twitter-wjs"));
+</script>  
+

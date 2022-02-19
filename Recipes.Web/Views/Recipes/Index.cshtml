@@ -1,0 +1,130 @@
+﻿@using Recipes.Web.Models
+@model List<Root>
+@{
+    ViewData["Title"] = "Recipes Page";
+}
+@using (Html.BeginForm())
+{
+    <div>
+        <img src="~/logo.jpg" alt="img" width="150" height="150">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s" style="visibility: visible; animation-delay: 0.5s; animation-name: fadeIn;">
+                <h4 class="mb-4">Welcome to the Recipes Portal...</h4>
+                <p class="mb-4">This is a sample application showcasing some basic demonstration of web development using the following technologies:</p>
+                <p><i class="fa fa-check text-primary me-3"></i>C# (.NET 5.0 Web Api, MVC Web App)</p>
+                <p><i class="fa fa-check text-primary me-3"></i>Javascript</p>
+                <p><i class="fa fa-check text-primary me-3"></i>HTML & CSS</p>
+                <p><i class="fa fa-check text-primary me-3"></i>MS SQL Server</p>
+                <h5 class="mb-4">Start by browsing through the list of recipes below.</h5>
+            </div>
+            <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeIn;">
+                <a class="twitter-timeline" data-width="400" data-height="450" data-dnt="true" href="https://twitter.com/tasty?ref_src=twsrc%5Etfw">Tweets by tasty</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+            </div>
+        </div>
+    </div>
+    <div>
+        <br>
+        <br>
+        <form>
+            @Html.ActionLink("Add New",
+        "AddRecipe",
+        "Recipes",
+        null,
+        new{ @class = "btn btn-info" })
+            <div class="row">
+
+                @foreach (var item in @ViewBag.ReceivedRecipes)
+                {
+                    <div class="column">
+                        <br>
+                        <div class="card">
+                            <img src="data:image/png;base64,@item.rec_image"
+                         class="card-img-top"
+                         alt="foodItem" />
+
+                            <div class="card-body">
+                                <h5 class="card-title"> @item.rec_name</h5>
+                                <p class="card-text"> Author: @item.usr_first_name </p>
+                                @Html.ActionLink("View",
+                        "Recipe",// controller action
+                        "Recipes",// controller
+                        new { @item.rec_route_name }, // action parameters
+                        new{ @class = "btn btn-primary" })
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                }
+
+            </div>
+            <button type="button" id="btnLoadMore" value="Load More" onclick="LoadMore()" class="btn-secondary">Load More</button>
+            <input type="hidden" id="hiddenData" name="hiddenData" value=@ViewBag.Data>
+
+        </form>
+    </div>
+}
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* Float four columns side by side */
+    .column {
+        float: left;
+        width: 25%;
+        padding: 0 10px;
+    }
+
+    /* Remove extra left and right margins, due to padding */
+    .row {
+        margin: 0 -5px;
+    }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+    /* Style the counter cards */
+    .card {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        padding: 16px;
+        text-align: center;
+        background-color: #f1f1f1;
+    }
+</style>
+<script>
+    var countRecipes = 1;
+    var hiddenData = document.getElementById("hiddenData").value
+
+    function LoadMore() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("IndexAsync" ,"Recipes")',
+            contentType: "application/json; charset=utf-8",
+            data: { counter: countRecipes,
+                    displayedRows: hiddenData
+                  },
+            dataType: "json",
+            success: function (data) {
+               if(hiddenData > 0){
+                    countRecipes = countRecipes + 1;
+                }
+                else{
+                    alert('No More Records to Load')
+                }
+            },
+            error: function () {
+               countRecipes = countRecipes + 1;
+               window.location.href = 'Index'
+            }
+        });
+    };
+
+</script>

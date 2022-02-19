@@ -1,0 +1,61 @@
+﻿@using Recipes.Web.Models
+@model UserLogin
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@using (Html.BeginForm()) 
+{
+    <form>
+        <section class="vh-100" style="background-color: #f2797d;"> @*same as logo/image*@
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col col-xl-10">
+        <div class="card" style="border-radius: 1rem;">
+          <div class="row g-0">
+            <div class="col-md-6 col-lg-5 d-none d-md-block">
+              <img
+                src="https://images.unsplash.com/photo-1506368249639-73a05d6f6488?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+                alt="login form"
+                class="img-fluid" style="border-radius: 1rem 0 0 1rem;"
+              />
+            </div>
+            <div class="col-md-6 col-lg-7 d-flex align-items-center">
+              <div class="card-body p-4 p-lg-5 text-black">
+
+                <form>
+
+                  <div class="d-flex align-items-center mb-3 pb-1">
+           <img src="~/logo.jpg" alt="img" width="150" height="150"> 
+                    
+                  </div>
+
+                  <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Sign into your account</h5>
+
+                  <div class="form-outline mb-4">
+                         @Html.LabelFor(model => model.Username, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control", @required="required"},  })
+            @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+            <small id="userHelp" class="form-text text-muted">*You can find login credentials in the readme.md file</small>
+                  </div>
+
+                  <div class="form-outline mb-4">
+                    @Html.LabelFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" ,@type="password", @required="required" } })
+            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                  </div>
+                    <button type="submit" class="btn btn-dark btn-lg btn-block">Sign in</button>
+                  <div class="pt-1 mb-4">
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+    </form>
+}
