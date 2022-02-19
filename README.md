@@ -34,7 +34,7 @@ Visual Studio
   git clone https://www.github.com/subloadedza/recipes-portal/
 ```
 
-~ Run ALL SQL scripts, in the "SQL" folder, against the RecipesDB database.
+~ Run ALL SQL scripts, in the "SQL" archive, against the RecipesDB database.
 
 ~ Open Recipes.sln and change the SQL Connection String in the DependencyInjection.cs file (Recipes.Repository class library/project)
 
